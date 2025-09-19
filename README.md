@@ -95,7 +95,7 @@ To create a standalone executable so users can run the application without insta
 
 🖼 Suggested Screenshot Placement
 
-<img width="960" height="624" alt="resim" src="https://github.com/user-attachments/assets/a6ccb2c7-e4df-4675-9c00-9bd946b99d5f" />
+<img width="959" height="624" alt="resim" src="https://github.com/user-attachments/assets/b9b4e283-407a-48db-a769-ad30cbdfbbdf" />
 
 
 
