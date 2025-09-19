@@ -27,27 +27,27 @@ class FirewallGUI(QMainWindow):
     def build_ui(self):
         layout = QVBoxLayout()
 
-        self.start_button = QPushButton("Firewall'u Başlat")
+        self.start_button = QPushButton("Start Firewall")
         self.start_button.clicked.connect(self.start_firewall)
-        self.stop_button = QPushButton("Firewall'u Durdur")
+        self.stop_button = QPushButton("Stop Firewall")
         self.stop_button.setEnabled(False)
         self.stop_button.clicked.connect(self.stop_firewall)
 
         rule_layout = QHBoxLayout()
         self.rule_input = QLineEdit()
-        self.rule_input.setPlaceholderText("Kural girin (örn. 192.168.1.1:80)")
-        self.add_rule_button = QPushButton("Kural Ekle")
+        self.rule_input.setPlaceholderText("Enter rule (exp. 192.168.1.1:80)")
+        self.add_rule_button = QPushButton("Add Rule")
         self.add_rule_button.clicked.connect(self.add_rule)
         rule_layout.addWidget(self.rule_input)
         rule_layout.addWidget(self.add_rule_button)
 
         self.rule_list = QListWidget()
-        self.delete_rule_button = QPushButton("Seçili Kuralı Sil")
+        self.delete_rule_button = QPushButton("Delete Selected Rule")
         self.delete_rule_button.clicked.connect(self.delete_rule)
 
         self.log_area = QTableWidget()
         self.log_area.setColumnCount(3)
-        self.log_area.setHorizontalHeaderLabels(["Kaynak", "Hedef", "Protokol"])
+        self.log_area.setHorizontalHeaderLabels(["Source", "Target", "Protocol"])
         self.log_area.setEditTriggers(QTableWidget.NoEditTriggers)
         self.log_area.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
 
@@ -57,23 +57,23 @@ class FirewallGUI(QMainWindow):
         self.web_list = QListWidget()
         website_layout = QHBoxLayout()
         self.website_input = QLineEdit()
-        self.website_input.setPlaceholderText("Engellenecek site (örn. www.site.com)")
-        self.add_website_button = QPushButton("Ekle")
+        self.website_input.setPlaceholderText("Site to be blocked (exp. www.site.com)")
+        self.add_website_button = QPushButton("Add")
         self.add_website_button.clicked.connect(self.add_website)
         website_layout.addWidget(self.website_input)
         website_layout.addWidget(self.add_website_button)
 
         layout.addWidget(self.start_button)
         layout.addWidget(self.stop_button)
-        layout.addWidget(QLabel("Kurallar:"))
+        layout.addWidget(QLabel("Rules:"))
         layout.addWidget(self.rule_list)
         layout.addLayout(rule_layout)
         layout.addWidget(self.delete_rule_button)
-        layout.addWidget(QLabel("Ağ Trafiği:"))
+        layout.addWidget(QLabel("Network Traffic:"))
         layout.addWidget(self.log_area)
-        layout.addWidget(QLabel("Uygulanan Kurallar:"))
+        layout.addWidget(QLabel("Applied Rules:"))
         layout.addWidget(self.rules_area)
-        layout.addWidget(QLabel("Engellenen Siteler:"))
+        layout.addWidget(QLabel("Blocked Sites:"))
         layout.addWidget(self.web_list)
         layout.addLayout(website_layout)
 
@@ -91,10 +91,10 @@ class FirewallGUI(QMainWindow):
         if rule:
             self.rules.append(rule)
             self.rule_list.addItem(rule)
-            self.rules_area.append(f"Kural eklendi: {rule}")
+            self.rules_area.append(f"Rule added: {rule}")
             self.rule_input.clear()
         else:
-            QMessageBox.warning(self, "Uyarı", "Geçerli bir kural girin!")
+            QMessageBox.warning(self, "Warning", "Enter a valid rule!")
 
     def delete_rule(self):
         item = self.rule_list.currentItem()
@@ -102,9 +102,9 @@ class FirewallGUI(QMainWindow):
             rule = item.text()
             self.rules.remove(rule)
             self.rule_list.takeItem(self.rule_list.row(item))
-            self.rules_area.append(f"Kural silindi: {rule}")
+            self.rules_area.append(f"Rule deleted: {rule}")
         else:
-            QMessageBox.warning(self, "Uyarı", "Silmek için bir kural seçin!")
+            QMessageBox.warning(self, "Warning", "Select a rule to delete!")
 
     def add_website(self):
         url = self.website_input.text().strip()
@@ -113,12 +113,12 @@ class FirewallGUI(QMainWindow):
             if ip:
                 self.website_filter.add(ip)
                 self.web_list.addItem(f"{url} ({ip})")
-                self.rules_area.append(f"Web sitesi engellendi: {url} ({ip})")
+                self.rules_area.append(f"The website is blocked: {url} ({ip})")
                 self.website_input.clear()
             else:
-                QMessageBox.warning(self, "Uyarı", "Geçerli bir URL girin!")
+                QMessageBox.warning(self, "Warning", "Enter a valid URL!")
         else:
-            QMessageBox.warning(self, "Uyarı", "Bir URL girin!")
+            QMessageBox.warning(self, "Warning", "Enter a URL!")
 
     def start_firewall(self):
         if not self.firewall_worker:
@@ -137,4 +137,4 @@ class FirewallGUI(QMainWindow):
             self.firewall_worker = None
             self.start_button.setEnabled(True)
             self.stop_button.setEnabled(False)
-            self.rules_area.append("Firewall durduruldu.")
+            self.rules_area.append("Firewall stopped.")
