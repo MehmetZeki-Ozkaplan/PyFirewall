@@ -94,7 +94,9 @@ To create a standalone executable so users can run the application without insta
 5. Stop Firewall → Safely stop all operations.
 
 🖼 Suggested Screenshot Placement
-<img width="956" height="624" alt="resim" src="https://github.com/user-attachments/assets/ac864602-81c2-4b4a-b4c4-d49aa4dfe3b7" />
+
+<img width="960" height="624" alt="resim" src="https://github.com/user-attachments/assets/a6ccb2c7-e4df-4675-9c00-9bd946b99d5f" />
+
 
 
 🛠 Developer Notes and Future Plans
