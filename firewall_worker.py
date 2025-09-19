@@ -35,7 +35,7 @@ class FirewallWorker(QThread):
     def get_protocol_name(self, protocol):
         if isinstance(protocol, tuple):
             protocol = protocol[0]
-        return self.PROTOCOL_MAP.get(protocol, f"Bilinmiyor ({protocol})")
+        return self.PROTOCOL_MAP.get(protocol, f"Unknown ({protocol})")
 
     def run(self):
         try:
@@ -54,11 +54,11 @@ class FirewallWorker(QThread):
                         continue
 
                     if src_ip in self.blacklist:
-                        self.rules_signal.emit(f"IP kara listede: {src_ip}")
+                        self.rules_signal.emit(f"IP is blacklisted: {src_ip}")
                         continue
 
                     if dst_ip in self.website_filter:
-                        self.rules_signal.emit(f"Engellendi: {dst_ip} (Web Sitesi)")
+                        self.rules_signal.emit(f"Blocked: {dst_ip} (Website)")
                         continue
 
                     self.traffic_tracker[src_ip].append(current_time)
@@ -67,10 +67,10 @@ class FirewallWorker(QThread):
 
                     if len(short_window) > 10000 or len(long_window) > 50000:
                         self.rules_signal.emit(
-                            f"DDOS Saldırısı Tespit Edildi: {src_ip} (1s: {len(short_window)}, 10s: {len(long_window)})"
+                            f"DDOS Attack Detected: {src_ip} (1s: {len(short_window)}, 10s: {len(long_window)})"
                         )
                         self.blacklist.add(src_ip)
-                        log_to_file(f"DDOS tespit edildi ve engellendi: {src_ip}", "warning")
+                        log_to_file(f"DDOS detected and blocked: {src_ip}", "warning")
                         continue
 
                     self.log_signal.emit(src_ip, dst_ip, protocol)
@@ -79,24 +79,24 @@ class FirewallWorker(QThread):
                     blocked = False
                     for rule in self.rules:
                         if "tcp" in rule.lower() and protocol.lower() == "tcp":
-                            self.rules_signal.emit("TCP paketi engellendi")
+                            self.rules_signal.emit("TCP packet blocked")
                             blocked = True
                             break
                         elif "udp" in rule.lower() and protocol.lower() == "udp":
-                            self.rules_signal.emit("UDP paketi engellendi")
+                            self.rules_signal.emit("UDP packet blocked")
                             blocked = True
                             break
                         elif rule in f"{packet.src_addr}:{packet.src_port}" or rule in f"{packet.dst_addr}:{packet.dst_port}":
-                            self.rules_signal.emit(f"Paket engellendi: {rule}")
-                            log_to_file(f"Kural engellendi: {rule}", "warning")
+                            self.rules_signal.emit(f"The packet was blocked: {rule}")
+                            log_to_file(f"Rule blocked: {rule}", "warning")
                             blocked = True
                             break
 
                     if not blocked:
                         w.send(packet)
         except Exception as e:
-            self.rules_signal.emit(f"Hata: {str(e)}")
-            log_to_file(f"Hata: {str(e)}", "error")
+            self.rules_signal.emit(f"Error: {str(e)}")
+            log_to_file(f"Error: {str(e)}", "error")
 
     def stop(self):
         self.running = False
